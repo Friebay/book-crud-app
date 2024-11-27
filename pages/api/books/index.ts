@@ -73,6 +73,23 @@ export default async function handler(req, res) {
     return res.status(200).json({ message: "Book deleted successfully" });
   }
 
-  res.setHeader("Allow", ["GET", "POST", "DELETE"]);
+  if (req.method === "PUT") {
+    const { bookId, title, author, isbn } = req.body;
+  
+    if (!bookId || !title || !author || !isbn) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const db = await openDB();
+  
+    await db.run(
+      "UPDATE books SET title = ?, author = ?, isbn = ? WHERE id = ? AND user_id = ?",
+      [title, author, isbn, bookId, userId]
+    );
+  
+    return res.status(200).json({ message: "Book updated successfully" });
+  }
+
+  res.setHeader("Allow", ["GET", "POST", "DELETE", "PUT"]);
   res.status(405).end(`Method ${req.method} Not Allowed`);
 }

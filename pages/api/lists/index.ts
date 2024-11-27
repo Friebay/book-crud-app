@@ -57,6 +57,23 @@ export default async function handler(req, res) {
     return res.status(200).json({ message: "List and associated books deleted successfully" });
   }
 
+  if (req.method === "PUT") {
+    const { listId, name } = req.body;
+  
+    if (!listId || !name) {
+      return res.status(400).json({ error: "List ID and name are required" });
+    }
+
+    const db = await openDB();
+  
+    await db.run(
+      "UPDATE lists SET name = ? WHERE id = ? AND user_id = ?",
+      [name, listId, userId]
+    );
+  
+    return res.status(200).json({ message: "List updated successfully" });
+  }
+
   res.setHeader("Allow", ["GET", "POST", "DELETE"]);
   res.status(405).end(`Method ${req.method} Not Allowed`);
 }
