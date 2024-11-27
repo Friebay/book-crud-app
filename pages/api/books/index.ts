@@ -12,6 +12,7 @@ const secret = process.env.NEXTAUTH_SECRET;
 
 export default async function handler(req, res) {
   const token = await getToken({ req, secret });
+  const session = await getSession({ req });
 
   if (!token) {
     return res.status(401).json({ message: "Unauthorized" });
