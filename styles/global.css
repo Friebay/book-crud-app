@@ -52,11 +52,21 @@ body {
     grid-template-rows: 80px auto;
     grid-template-columns: 200px 1fr 300px;
     grid-template-areas:
-      "header header header"
-      "sidebar main books";
+        "header header header"
+        "sidebar main latest-books";
     height: 100vh;
-  }
-  
+    }
+
+    .container-books {
+        display: grid;
+        grid-template-rows: 80px auto;
+        grid-template-columns: 200px 1fr 300px;
+        grid-template-areas:
+            "header header header"
+            "sidebar main books";
+        height: 100vh;
+    }
+
   /* Header */
   header {
     grid-area: header;
@@ -66,6 +76,7 @@ body {
     padding: 0 20px;
     background-color: #007bff;
     color: white;
+    text-align: center;
   }
   
   header h1 {
@@ -87,7 +98,8 @@ body {
   .sidebar {
     grid-area: sidebar;
     padding: 20px;
-    background-color: #f1f1f1;
+    background-color: #f4f4f4;
+    border-right: 1px solid #ddd;
   }
   
   .sidebar h2 {
@@ -132,3 +144,57 @@ body {
     height: 40px;
   }
   
+  .book-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+  }
+  
+  .book-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #fafafa;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .book-card h3 {
+    margin: 0 0 10px;
+    font-size: 1.1em;
+  }
+  
+  .book-card a {
+    color: #0070f3;
+    text-decoration: none;
+  }
+  
+  .book-card a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Latest Books Section */
+  .latest-books {
+    grid-area: latest-books;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-left: 1px solid #ddd;
+  }
+  
+  .latest-books ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .latest-books li {
+    margin-bottom: 10px;
+  }
+  
+  .latest-books p {
+    margin: 0;
+    font-weight: bold;
+  }
+  
+  .latest-books small {
+    display: block;
+    color: #666;
+  }
