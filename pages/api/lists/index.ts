@@ -17,6 +17,7 @@ export default async function handler(req, res) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
+
   const userId = token.id; // Retrieve user ID from token payload
 
   if (req.method === "POST") {
@@ -41,6 +42,21 @@ export default async function handler(req, res) {
     return res.status(200).json(lists);
   }
 
-  res.setHeader("Allow", ["POST", "GET"]);
+  if (req.method === "DELETE") {
+    const { listId } = req.query;
+
+    if (!listId) {
+      return res.status(400).json({ error: "List ID is required" });
+    }
+
+    const db = await openDB();
+
+    // Delete the list and its associated books
+    await db.run("DELETE FROM books WHERE list_id = ? AND user_id = ?", [listId, userId]);
+    await db.run("DELETE FROM lists WHERE id = ? AND user_id = ?", [listId, userId]);
+    return res.status(200).json({ message: "List and associated books deleted successfully" });
+  }
+
+  res.setHeader("Allow", ["GET", "POST", "DELETE"]);
   res.status(405).end(`Method ${req.method} Not Allowed`);
 }

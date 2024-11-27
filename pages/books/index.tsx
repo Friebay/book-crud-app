@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 
+
 export default function Books() {
   const { data: session } = useSession();
   const router = useRouter();
@@ -32,6 +33,41 @@ export default function Books() {
         .catch(console.error);
     }
   }, [selectedListId]);
+
+
+  // Delete a book
+  const handleDeleteBook = async (bookId) => {
+    try {
+      const res = await fetch(`/api/books?bookId=${bookId}`, { method: "DELETE" });
+      if (res.ok) {
+        setBooks((prev) => prev.filter((book) => book.id !== bookId));
+      } else {
+        // Handle error (optional)
+        console.error("Failed to delete book");
+      }
+    } catch (error) {
+      console.error("Error deleting book:", error);
+    }
+  };
+
+  // Delete a list
+  const handleDeleteList = async (listId) => {
+    try {
+      const res = await fetch(`/api/lists?listId=${listId}`, { method: "DELETE" });
+      if (res.ok) {
+        setLists((prev) => prev.filter((list) => list.id !== listId));
+        if (selectedListId === listId) {
+          setSelectedListId("");
+          setBooks([]);
+        }
+      } else {
+        // Handle error (optional)
+        console.error("Failed to delete list");
+      }
+    } catch (error) {
+      console.error("Error deleting list:", error);
+    }
+  };
 
   // Create a new list
   const handleCreateList = async (e: React.FormEvent) => {
@@ -82,13 +118,18 @@ export default function Books() {
         <h1>Welcome, {session?.user?.name}</h1>
         <button onClick={handleLogout}>Log Out</button>
       </header>
-
       <aside className="sidebar">
-        <h2>Your Lists</h2>
+      <h2>Your Lists</h2>
         <ul>
           {lists.map((list) => (
-            <li key={list.id}>
+            <li key={list.id} className="list-item">
               <button onClick={() => setSelectedListId(list.id)}>{list.name}</button>
+              <button 
+                onClick={() => handleDeleteList(list.id)} 
+                className="delete-btn"
+              >
+                Delete List
+              </button>
             </li>
           ))}
         </ul>
@@ -137,11 +178,17 @@ export default function Books() {
       </main>
 
       <section className="books">
-        <h2>Books in Selected List</h2>
+      <h2>Books in Selected List</h2>
         <ul>
           {books.map((book) => (
-            <li key={book.id}>
+            <li key={book.id} className="book-item">
               <span>{book.title}</span> by {book.author} (ISBN: {book.isbn})
+              <button 
+                onClick={() => handleDeleteBook(book.id)} 
+                className="delete-btn"
+              >
+                Delete Book
+              </button>
             </li>
           ))}
         </ul>
