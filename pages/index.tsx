@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
+import { useSession, signOut } from "next-auth/react";
 
 export default function Home() {
   const [randomBooks, setRandomBooks] = useState([]);
   const [latestBooks, setLatestBooks] = useState([]);
+  const { data: session } = useSession(); // Get session data
 
   // Fetch data from "books.sqlite"
   useEffect(() => {
@@ -28,14 +28,27 @@ export default function Home() {
 
       <aside className="sidebar">
         <h2>Get Started</h2>
+        {!session ? (
+          <>
+            <p>
+              <Link href="/auth/register">
+                <button>Register</button>
+              </Link>
+            </p>
+            <p>
+              <Link href="/auth/login">
+                <button>Log In</button>
+              </Link>
+            </p>
+          </>
+        ) : (
+          <p>
+            <button onClick={() => signOut()}>Log Out</button>
+          </p>
+        )}
         <p>
-          <Link href="/auth/register">
-            <button>Register</button>
-          </Link>
-        </p>
-        <p>
-          <Link href="/auth/login">
-            <button>Log In</button>
+          <Link href="/search">
+            <button>Search</button>
           </Link>
         </p>
       </aside>
