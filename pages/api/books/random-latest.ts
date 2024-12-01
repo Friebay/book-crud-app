@@ -15,12 +15,12 @@ export default async function handler(req, res) {
 
     // Fetch 12 random books
     const randomBooks = await db.all(
-      "SELECT id, book_name, author_name, hyperlink, price FROM books ORDER BY RANDOM() LIMIT 12"
+      "SELECT id, book_name, author_name, hyperlink, price FROM books ORDER BY RANDOM() LIMIT 25"
     );
 
     // Fetch 3 latest books
     const latestBooks = await db.all(
-      "SELECT id, book_name, author_name FROM books ORDER BY id DESC LIMIT 3"
+      "SELECT id, book_name, author_name FROM books ORDER BY id DESC LIMIT 9"
     );
 
     return res.status(200).json({ randomBooks, latestBooks });

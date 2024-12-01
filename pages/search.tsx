@@ -1,11 +1,14 @@
 import { useState } from "react";
+import { signOut } from "next-auth/react"; // Import signOut from next-auth
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false); // Track loading state
 
   const handleSearch = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Start loading
 
     const res = await fetch(`/api/search?query=${encodeURIComponent(query)}`);
     if (res.ok) {
@@ -14,12 +17,19 @@ export default function SearchPage() {
     } else {
       setResults([]);
     }
+
+    setIsLoading(false); // Stop loading
   };
 
   return (
     <div className="container">
       <header>
         <h1>Search Books</h1>
+        <div className="header-buttons">
+          <button onClick={() => (window.location.href = "/")}>Home</button>
+          <button onClick={() => (window.location.href = "/books")}>Books</button>
+          <button onClick={() => signOut()}>Log Out</button>
+        </div>
       </header>
 
       <main>
@@ -31,11 +41,15 @@ export default function SearchPage() {
             onChange={(e) => setQuery(e.target.value)}
             required
           />
-          <button type="submit">Search</button>
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? "Searching..." : "Search"}
+          </button>
         </form>
 
         <div className="results">
-          {results.length > 0 ? (
+          {isLoading ? (
+            <p>Loading results...</p>
+          ) : results.length > 0 ? (
             results.map((book) => (
               <div key={book.id} className="book-card">
                 <h3>{book.book_name}</h3>
@@ -50,71 +64,6 @@ export default function SearchPage() {
           )}
         </div>
       </main>
-
-      <style jsx>{`
-        .container {
-          padding: 20px;
-        }
-
-        header {
-          text-align: center;
-          margin-bottom: 20px;
-        }
-
-        form {
-          display: flex;
-          justify-content: center;
-          margin-bottom: 20px;
-        }
-
-        input {
-          width: 300px;
-          padding: 10px;
-          margin-right: 10px;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-        }
-
-        button {
-          padding: 10px 20px;
-          background-color: #0070f3;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-        }
-
-        button:hover {
-          background-color: #005bb5;
-        }
-
-        .results {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-          gap: 20px;
-        }
-
-        .book-card {
-          border: 1px solid #ddd;
-          padding: 15px;
-          border-radius: 8px;
-          background-color: #fafafa;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .book-card h3 {
-          margin: 0 0 10px;
-        }
-
-        .book-card a {
-          color: #0070f3;
-          text-decoration: none;
-        }
-
-        .book-card a:hover {
-          text-decoration: underline;
-        }
-      `}</style>
     </div>
   );
 }

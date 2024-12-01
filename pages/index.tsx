@@ -24,37 +24,40 @@ export default function Home() {
     <div className="container">
       <header>
         <h1>Welcome to the Book List App</h1>
+        <nav className="header-nav">
+          <Link href="/">
+            <button>Home</button>
+          </Link>
+          <Link href="/search">
+            <button>Search</button>
+          </Link>
+          <Link href="/books">
+            <button>Saved Lists</button>
+          </Link>
+          {!session ? (
+            <>
+              <Link href="/auth/register">
+                <button>Register</button>
+              </Link>
+              <Link href="/auth/login">
+                <button>Log In</button>
+              </Link>
+            </>
+          ) : (
+            <button onClick={() => signOut()}>Log Out</button>
+          )}
+        </nav>
       </header>
 
       <aside className="sidebar">
         <h2>Get Started</h2>
-        {!session ? (
-          <>
-            <p>
-              <Link href="/auth/register">
-                <button>Register</button>
-              </Link>
-            </p>
-            <p>
-              <Link href="/auth/login">
-                <button>Log In</button>
-              </Link>
-            </p>
-          </>
-        ) : (
-          <p>
-            <button onClick={() => signOut()}>Log Out</button>
-          </p>
-        )}
-        <p>
-          <Link href="/search">
-            <button>Search</button>
-          </Link>
-          
-          <Link href="/books">
-            <button>Saved Lists</button>
-          </Link>
-        </p>
+        <p>Discover new books and manage your lists!</p>
+        <Link href="/search">
+          <button>Start Searching</button>
+        </Link>
+        <Link href="/books">
+          <button>View Your Lists</button>
+        </Link>
       </aside>
 
       <main className="main">

@@ -118,17 +118,17 @@ export default function Books() {
         <h1>Welcome, {session?.user?.name}</h1>
         <button onClick={handleLogout}>Log Out</button>
         <Link href="/">
-                <button>Home</button>
-          </Link>
+          <button>Home</button>
+        </Link>
       </header>
       <aside className="sidebar">
-      <h2>Your Lists</h2>
+        <h2>Your Lists</h2>
         <ul>
           {lists.map((list) => (
             <li key={list.id} className="list-item">
               <button onClick={() => setSelectedListId(list.id)}>{list.name}</button>
-              <button 
-                onClick={() => handleDeleteList(list.id)} 
+              <button
+                onClick={() => handleDeleteList(list.id)}
                 className="delete-btn"
               >
                 Delete List
@@ -181,13 +181,13 @@ export default function Books() {
       </main>
 
       <section className="books">
-      <h2>Books in Selected List</h2>
+        <h2>Books in Selected List</h2>
         <ul>
           {books.map((book) => (
             <li key={book.id} className="book-item">
               <span>{book.title}</span> by {book.author} (ISBN: {book.isbn})
-              <button 
-                onClick={() => handleDeleteBook(book.id)} 
+              <button
+                onClick={() => handleDeleteBook(book.id)}
                 className="delete-btn"
               >
                 Delete Book
