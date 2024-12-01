@@ -50,6 +50,10 @@ export default function Home() {
           <Link href="/search">
             <button>Search</button>
           </Link>
+          
+          <Link href="/books">
+            <button>Saved Lists</button>
+          </Link>
         </p>
       </aside>
 

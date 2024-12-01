@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
-
+import Link from "next/link";
 
 export default function Books() {
   const { data: session } = useSession();
@@ -117,6 +117,9 @@ export default function Books() {
       <header>
         <h1>Welcome, {session?.user?.name}</h1>
         <button onClick={handleLogout}>Log Out</button>
+        <Link href="/">
+                <button>Home</button>
+          </Link>
       </header>
       <aside className="sidebar">
       <h2>Your Lists</h2>
