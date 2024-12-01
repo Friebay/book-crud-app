@@ -112,6 +112,7 @@ export default function Books() {
     router.push("/"); // Redirect to the home page after sign out
   };
 
+  
   return (
     <div className="container-books">
       <header>
