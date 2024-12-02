@@ -4,7 +4,7 @@ import { open } from "sqlite";
 // Open the SQLite database
 const openDB = async () => {
   return open({
-    filename: "./books.sqlite",
+    filename: "./database.sqlite",
     driver: sqlite3.Database,
   });
 };
@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     const books = await db.all(
       `
       SELECT id, book_name, author_name, hyperlink, price
-      FROM books
+      FROM collected_books
       WHERE book_name LIKE ? OR author_name LIKE ?
       LIMIT 50
       `,

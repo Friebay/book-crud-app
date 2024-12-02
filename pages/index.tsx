@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
+import Sidebar from "../pages/components/Sidebar";
+
 
 export default function Home() {
   const [randomBooks, setRandomBooks] = useState([]);
@@ -65,14 +67,8 @@ export default function Home() {
         </nav>
       </header>
 
-      <aside className="sidebar">
-              <h2>Sidebar</h2>
-              <ul>
-                  <li>
-                    <p>test</p>
-                  </li>
-              </ul>
-            </aside>
+      {/* Use the Sidebar Component */}
+      <Sidebar />
 
       <main className="main">
         <section className="search-section">
@@ -138,21 +134,21 @@ export default function Home() {
               </div>
             </section>
 
-            
+
           </>
         )}
       </main>
       <aside className="latest-books">
-              <h2>Latest Books</h2>
-              <ul>
-                {latestBooks.map((book) => (
-                  <li key={book.id}>
-                    <p>{book.book_name}</p>
-                    <small>By {book.author_name}</small>
-                  </li>
-                ))}
-              </ul>
-            </aside>
+        <h2>Latest Books</h2>
+        <ul>
+          {latestBooks.map((book) => (
+            <li key={book.id}>
+              <p>{book.book_name}</p>
+              <small>By {book.author_name}</small>
+            </li>
+          ))}
+        </ul>
+      </aside>
     </div>
   );
 }
