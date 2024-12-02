@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { signOut } from "next-auth/react"; // Import signOut from next-auth
+import { signOut } from "next-auth/react";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
-  const [isLoading, setIsLoading] = useState(false); // Track loading state
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSearch = async (e) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true); // Start loading
+    setIsLoading(true);
 
     const res = await fetch(`/api/search?query=${encodeURIComponent(query)}`);
     if (res.ok) {
@@ -18,12 +18,12 @@ export default function SearchPage() {
       setResults([]);
     }
 
-    setIsLoading(false); // Stop loading
+    setIsLoading(false);
   };
 
   return (
-    <div className="container">
-      <header>
+    <div className="search-container">
+      <header className="search-header">
         <h1>Search Books</h1>
         <div className="header-buttons">
           <button onClick={() => (window.location.href = "/")}>Home</button>
@@ -32,16 +32,17 @@ export default function SearchPage() {
         </div>
       </header>
 
-      <main>
-        <form onSubmit={handleSearch}>
+      <main className="search-main">
+        <form onSubmit={handleSearch} className="search-form">
           <input
             type="text"
             placeholder="Search by author or book name"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             required
+            className="search-input"
           />
-          <button type="submit" disabled={isLoading}>
+          <button type="submit" className="search-button" disabled={isLoading}>
             {isLoading ? "Searching..." : "Search"}
           </button>
         </form>
@@ -50,15 +51,22 @@ export default function SearchPage() {
           {isLoading ? (
             <p>Loading results...</p>
           ) : results.length > 0 ? (
-            results.map((book) => (
-              <div key={book.id} className="book-card">
-                <h3>{book.book_name}</h3>
-                <p>By {book.author_name}</p>
-                <a href={book.hyperlink} target="_blank" rel="noopener noreferrer">
-                  Buy for ${book.price}
-                </a>
-              </div>
-            ))
+            <div className="results-grid">
+              {results.map((book) => (
+                <div key={book.id} className="book-card">
+                  <h3>{book.book_name}</h3>
+                  <p>By {book.author_name}</p>
+                  <a
+                    href={book.hyperlink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="buy-link"
+                  >
+                    Buy for ${book.price}
+                  </a>
+                </div>
+              ))}
+            </div>
           ) : (
             <p>No results found</p>
           )}
