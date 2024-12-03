@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { signIn } from "next-auth/react";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -42,7 +43,7 @@ export default function Register() {
     }
   };
 
-  
+
 
   const checkPasswordStrength = (password: string) => {
     setPasswordStrength({
@@ -78,65 +79,77 @@ export default function Register() {
           />
         </div>
         <div className="form-group">
-        <label>Password:</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => {
-            const newPassword = e.target.value;
-            setPassword(newPassword);
-            checkPasswordStrength(newPassword);
-          }}
-          required
-          placeholder="Create a strong password"
-          className="password-input"
-        />
-        <div className="password-requirements">
-          <p 
-            style={{ 
-              color: passwordStrength.length ? 'green' : 'red',
-              fontWeight: 'bold'
+          <label>Password:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => {
+              const newPassword = e.target.value;
+              setPassword(newPassword);
+              checkPasswordStrength(newPassword);
             }}
-          >
-            {passwordStrength.length ? '✓' : '✗'} At least 12 characters
-          </p>
-          <p 
-            style={{ 
-              color: passwordStrength.uppercase ? 'green' : 'red',
-              fontWeight: 'bold'
-            }}
-          >
-            {passwordStrength.uppercase ? '✓' : '✗'} Contains uppercase letter
-          </p>
-          <p 
-            style={{ 
-              color: passwordStrength.lowercase ? 'green' : 'red',
-              fontWeight: 'bold'
-            }}
-          >
-            {passwordStrength.lowercase ? '✓' : '✗'} Contains lowercase letter
-          </p>
-          <p 
-            style={{ 
-              color: passwordStrength.number ? 'green' : 'red',
-              fontWeight: 'bold'
-            }}
-          >
-            {passwordStrength.number ? '✓' : '✗'} Contains number
-          </p>
-          <p 
-            style={{ 
-              color: passwordStrength.specialChar ? 'green' : 'red',
-              fontWeight: 'bold'
-            }}
-          >
-            {passwordStrength.specialChar ? '✓' : '✗'} Contains special character
-          </p>
+            required
+            placeholder="Create a strong password"
+            className="password-input"
+          />
+          <div className="password-requirements">
+            <p
+              style={{
+                color: passwordStrength.length ? 'green' : 'red',
+                fontWeight: 'bold'
+              }}
+            >
+              {passwordStrength.length ? '✓' : '✗'} At least 12 characters
+            </p>
+            <p
+              style={{
+                color: passwordStrength.uppercase ? 'green' : 'red',
+                fontWeight: 'bold'
+              }}
+            >
+              {passwordStrength.uppercase ? '✓' : '✗'} Contains uppercase letter
+            </p>
+            <p
+              style={{
+                color: passwordStrength.lowercase ? 'green' : 'red',
+                fontWeight: 'bold'
+              }}
+            >
+              {passwordStrength.lowercase ? '✓' : '✗'} Contains lowercase letter
+            </p>
+            <p
+              style={{
+                color: passwordStrength.number ? 'green' : 'red',
+                fontWeight: 'bold'
+              }}
+            >
+              {passwordStrength.number ? '✓' : '✗'} Contains number
+            </p>
+            <p
+              style={{
+                color: passwordStrength.specialChar ? 'green' : 'red',
+                fontWeight: 'bold'
+              }}
+            >
+              {passwordStrength.specialChar ? '✓' : '✗'} Contains special character
+            </p>
+          </div>
         </div>
-      </div>
         <button type="submit" className="register-button" disabled={isLoading}>
           {isLoading ? "Creating Account..." : "Register"}
         </button>
+        <a><br /></a>
+        <button
+          onClick={() =>
+            signIn("github", {
+              callbackUrl: "/", // Redirect to homepage after login
+            })
+          }
+          className="github-login-button"
+        >
+          Log in with GitHub
+        </button>
+
       </form>
 
       <div className="extra-links">

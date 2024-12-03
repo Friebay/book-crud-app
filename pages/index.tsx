@@ -12,6 +12,8 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const { data: session } = useSession(); // Get session data
   const [timeLeft, setTimeLeft] = useState(60); // Timer starts at 60 seconds
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
+
 
   // Function to fetch random and latest books
   async function fetchBooks() {
@@ -92,9 +94,6 @@ export default function Home() {
       <header>
         <h1>Welcome to the Book List App</h1>
         <nav className="header-nav">
-          <Link href="/">
-            <button>Home</button>
-          </Link>
           <Link href="/books">
             <button>Saved Lists</button>
           </Link>
@@ -150,7 +149,7 @@ export default function Home() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Buy for ${book.price}
+                      Buy for {book.price}
                     </a>
                   </div>
                 ))
@@ -173,7 +172,7 @@ export default function Home() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Buy for ${book.price}
+                      Buy for {book.price}
                     </a>
                   </div>
                 ))}
@@ -190,7 +189,11 @@ export default function Home() {
         <ul>
           {latestBooks.map((book) => (
             <li key={book.id}>
-              <a href="book.hyperlink"><p>{book.book_name}</p></a>
+              <p><a
+                      href={book.hyperlink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >{book.book_name}</a></p>
               <small>By {book.author_name}<br />At {book.found_time.substring(0, 16)}</small>
             </li>
           ))}

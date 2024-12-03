@@ -1,7 +1,21 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+
+// Type definitions for better type safety
+interface List {
+  id: string;
+  name: string;
+}
+
+interface Book {
+  id: string;
+  title: string;
+  author: string;
+  isbn: string;
+  list_id: string;
+}
 
 export default function ManagePage() {
   const { data: session } = useSession();
@@ -307,7 +321,7 @@ export default function ManagePage() {
   }
 `}</style>
 
-      <main>
+      <main className="main">
         <h2>Books in Selected List</h2>
         {selectedListId && (
           <form onSubmit={editingBookId ? handleUpdateBook : handleAddBook}>
@@ -320,14 +334,14 @@ export default function ManagePage() {
             />
             <input
               type="text"
-              placeholder="Book Author"
+              placeholder="Book Author (not required)"
               value={bookAuthor}
               onChange={(e) => setBookAuthor(e.target.value)}
               required
             />
             <input
               type="text"
-              placeholder="Book ISBN"
+              placeholder="Book ISBN (not required)"
               value={bookIsbn}
               onChange={(e) => setBookIsbn(e.target.value)}
               required

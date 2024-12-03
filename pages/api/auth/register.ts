@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
 
+
 const openDB = async () =>
   open({
     filename: "./database.sqlite", // Path to your SQLite database
