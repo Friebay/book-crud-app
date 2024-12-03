@@ -8,12 +8,35 @@ const openDB = async () =>
     driver: sqlite3.Database,
   });
 
+  function isPasswordComplex(password: string): boolean {
+    // Enforce password complexity rules
+    const minLength = 12; // Recommended minimum length
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+  
+    return (
+      password.length >= minLength &&
+      hasUpperCase &&
+      hasLowerCase &&
+      hasNumbers &&
+      hasSpecialChar
+    );
+  }
+
 export default async function handler(req, res) {
   if (req.method === "POST") {
     const { email, password } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password are required." });
+    }
+
+    if (!isPasswordComplex(password)) {
+      return res.status(400).json({ 
+        message: "Password must be at least 12 characters long and include uppercase, lowercase, numbers, and special characters." 
+      });
     }
 
     const db = await openDB();
