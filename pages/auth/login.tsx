@@ -23,7 +23,7 @@ export default function Login() {
     setIsLoading(false); // Stop loading
 
     if (result?.error) {
-      setError("Invalid email or password. Please try again.");
+      setError("Netinkamas el. pašto adresas arba slaptažodis. Bandykite dar kartą.");
     } else {
       router.push("/"); // Redirect to the home page after login
     }
@@ -31,51 +31,51 @@ export default function Login() {
 
   return (
     <div className="login-container">
-      <h1>Welcome Back</h1>
-      <p>Log in to your account to continue</p>
+      <h1>Sveiki sugrįžę</h1>
+      <p>Norėdami tęsti, prisijunkite prie savo paskyros</p>
 
       {error && <div className="error-message">{error}</div>}
 
       <form onSubmit={handleLogin} className="login-form">
         <div className="form-group">
-          <label>Email:</label>
+          <label>El. paštas:</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            placeholder="Enter your email"
+            placeholder="Įveskite savo el. pašto adresą"
           />
         </div>
         <div className="form-group">
-          <label>Password:</label>
+          <label>Slaptažodis:</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            placeholder="Enter your password"
+            placeholder="Įveskite savo slaptažodį"
           />
         </div>
         <button type="submit" className="login-button" disabled={isLoading}>
-          {isLoading ? "Logging In..." : "Log In"}
+          {isLoading ? "Prijungiama..." : "Prisijungti"}
         </button>
         <a><br /></a>
         <button onClick={() => signIn("github")} className="github-login-button">
-          Log in with GitHub
+          Prisijungti naudojantis GitHub
         </button>
       </form>
 
       <div className="extra-links">
         <p>
-          Don't have an account?{" "}
+          Neturite paskyros?{" "}
           <a href="/auth/register" className="register-link">
-            Register here
+            Registruokitės čia
           </a>
         </p>
         <p>
           <a href="/auth/forgot-password" className="forgot-password-link">
-            Forgot your password?
+            Pamiršote slaptažodį?
           </a>
         </p>
       </div>

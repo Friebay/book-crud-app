@@ -36,7 +36,7 @@ export default async function handler(req, res) {
 
     if (!isPasswordComplex(password)) {
       return res.status(400).json({
-        message: "Password must be at least 12 characters long and include uppercase, lowercase, numbers, and special characters."
+        message: "Slaptažodis turi būti ne trumpesnis nei 12 simbolių, jame turi būti didžiosios ir mažosios raidės, skaičiai ir specialieji simboliai."
       });
     }
 

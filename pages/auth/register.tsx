@@ -57,12 +57,12 @@ export default function Register() {
 
   return (
     <div className="register-container">
-      <h1>Create Your Account</h1>
-      <p>Sign up to access your book lists and more.</p>
+      <h1>Susikurti paskyrą</h1>
+      <p>Užsiregistruokite, kad galėtumėte išsaugoti savo knygų sąrašus.</p>
 
       {success && (
         <div className="success-message">
-          Registration successful! Redirecting to log in...
+          Registracija sėkminga! Peradresuojama į prisijungimą...
         </div>
       )}
       {error && <div className="error-message">{error}</div>}
@@ -75,11 +75,11 @@ export default function Register() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            placeholder="Enter your email"
+            placeholder="Įveskite savo el. pašto adresą"
           />
         </div>
         <div className="form-group">
-          <label>Password:</label>
+          <label>Slaptažodis:</label>
           <input
             type="password"
             value={password}
@@ -89,7 +89,7 @@ export default function Register() {
               checkPasswordStrength(newPassword);
             }}
             required
-            placeholder="Create a strong password"
+            placeholder="Sukurkite stiprų slaptažodį"
             className="password-input"
           />
           <div className="password-requirements">
@@ -99,7 +99,7 @@ export default function Register() {
                 fontWeight: 'bold'
               }}
             >
-              {passwordStrength.length ? '✓' : '✗'} At least 12 characters
+              {passwordStrength.length ? '✓' : '✗'} Ne mažiau kaip 12 simbolių
             </p>
             <p
               style={{
@@ -107,7 +107,7 @@ export default function Register() {
                 fontWeight: 'bold'
               }}
             >
-              {passwordStrength.uppercase ? '✓' : '✗'} Contains uppercase letter
+              {passwordStrength.uppercase ? '✓' : '✗'} Turi didžiąją raidę
             </p>
             <p
               style={{
@@ -115,7 +115,7 @@ export default function Register() {
                 fontWeight: 'bold'
               }}
             >
-              {passwordStrength.lowercase ? '✓' : '✗'} Contains lowercase letter
+              {passwordStrength.lowercase ? '✓' : '✗'} Turi mažąją raidę
             </p>
             <p
               style={{
@@ -123,7 +123,7 @@ export default function Register() {
                 fontWeight: 'bold'
               }}
             >
-              {passwordStrength.number ? '✓' : '✗'} Contains number
+              {passwordStrength.number ? '✓' : '✗'} Turi numerį
             </p>
             <p
               style={{
@@ -131,7 +131,7 @@ export default function Register() {
                 fontWeight: 'bold'
               }}
             >
-              {passwordStrength.specialChar ? '✓' : '✗'} Contains special character
+              {passwordStrength.specialChar ? '✓' : '✗'} Turi specialų simbolį
             </p>
           </div>
         </div>
@@ -147,16 +147,16 @@ export default function Register() {
           }
           className="github-login-button"
         >
-          Log in with GitHub
+          Prisijungti naudojantis GitHub
         </button>
 
       </form>
 
       <div className="extra-links">
         <p>
-          Already have an account?{" "}
+          Jau turite paskyrą?{" "}
           <a href="/auth/login" className="login-link">
-            Log In
+            Prisijungti
           </a>
         </p>
       </div>

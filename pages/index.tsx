@@ -92,22 +92,22 @@ export default function Home() {
   return (
     <div className="container">
       <header>
-        <h1>Welcome to the Book List App</h1>
+        <h1>Sveiki atvykę į knygų katalogą!</h1>
         <nav className="header-nav">
           <Link href="/books">
-            <button>Saved Lists</button>
+            <button>Išsaugoti sąrašai</button>
           </Link>
           {!session ? (
             <>
               <Link href="/auth/register">
-                <button>Register</button>
+                <button>Registruotis</button>
               </Link>
               <Link href="/auth/login">
-                <button>Log In</button>
+                <button>Prisijungti</button>
               </Link>
             </>
           ) : (
-            <button onClick={() => signOut()}>Log Out</button>
+            <button onClick={() => signOut()}>Atsijungti</button>
           )}
         </nav>
       </header>
@@ -116,62 +116,62 @@ export default function Home() {
 
       <main className="main">
         <section className="search-section">
-          <h2>Search Books</h2>
+          <h2>Ieškoti knygų</h2>
           <form onSubmit={handleSearch} className="search-form">
             <input
               type="text"
-              placeholder="Search by author or book name"
+              placeholder="Ieškoti pagal autorių arba knygos pavadinimą"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               required
               className="search-input"
             />
             <button type="submit" className="search-button" disabled={isLoading}>
-              {isLoading ? "Searching..." : "Search"}
+              {isLoading ? "Ieškoma..." : "Ieškoti"}
             </button>
           </form>
         </section>
 
         {query ? (
           <section className="search-results">
-            <h2>Search Results</h2>
+            <h2>Paieškos rezultatai</h2>
             <div className="book-cards">
               {isLoading ? (
-                <p>Loading results...</p>
+                <p>Krauname rezultatus...</p>
               ) : searchResults.length > 0 ? (
                 searchResults.map((book) => (
                   <div className="book-card" key={book.id}>
                     <h3>{book.book_name}</h3>
-                    <p>By {book.author_name}</p>
+                    <p>Autorius: {book.author_name}</p>
                     <a
                       href={book.hyperlink}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Buy for {book.price}
+                      Pirkti už {book.price}
                     </a>
                   </div>
                 ))
               ) : (
-                <p>No results found</p>
+                <p>Neradome jokių rezultatų</p>
               )}
             </div>
           </section>
         ) : (
           <>
             <section>
-              <h2>Random Books</h2>
+              <h2>Atsitiktinės knygos</h2>
               <div className="book-cards">
                 {randomBooks.map((book) => (
                   <div className="book-card" key={book.id}>
                     <h3>{book.book_name}</h3>
-                    <p>By {book.author_name}</p>
+                    <p>Autorius: {book.author_name}</p>
                     <a
                       href={book.hyperlink}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Buy for {book.price}
+                      Pirkti už {book.price}
                     </a>
                   </div>
                 ))}
@@ -183,8 +183,8 @@ export default function Home() {
         )}
       </main>
       <aside className="latest-books">
-        <h2>Latest Books</h2>
-        <p>Updating in {timeLeft} seconds...</p>
+        <h2>Naujausios knygos</h2>
+        <p>Atsinaujins už {timeLeft} sekundžių...</p>
         <ul>
           {latestBooks.map((book) => (
             <li key={book.id}>
@@ -193,7 +193,7 @@ export default function Home() {
                 target="_blank"
                 rel="noopener noreferrer"
               >{book.book_name}</a></p>
-              <small>By {book.author_name}<br />At {book.found_time.substring(0, 16)}</small>
+              <small>Autorius: {book.author_name}<br />Radimo laikas: {book.found_time.substring(0, 16)}</small>
             </li>
           ))}
         </ul>

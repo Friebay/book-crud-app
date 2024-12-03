@@ -51,7 +51,7 @@ function Sidebar() {
 
   return (
     <aside className="sidebar">
-      <h2>Latest books in your lists</h2>
+      <h2>Naujausios knygos jūsų sąrašuose</h2>
       <ul>
         {latestBooks.length > 0 ? (
           latestBooks.slice(0, 8).map((book) => ( // Show only the first 9 books
@@ -67,7 +67,7 @@ function Sidebar() {
             </li>
           ))
         ) : (
-          <p>No matching books found in your lists.</p>
+          <p>Knygų iš jūsų sąrašo neradome.</p>
         )}
       </ul>
     </aside>

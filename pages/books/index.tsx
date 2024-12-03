@@ -206,17 +206,17 @@ export default function ManagePage() {
   return (
     <div className="container-books">
       <header>
-        <h1>Manage Your Lists and Books</h1>
+        <h1>Tvarkykite savo sąrašus ir knygas</h1>
         <div className="header-nav">
           <Link href="/">
-            <button>Home</button>
+            <button>Pagrindinis</button>
           </Link>
           <Link href="/" onClick={async (e) => {
             e.preventDefault(); // Prevent the default link behavior
             await signOut(); // Call the sign-out function
             router.push("/"); // Navigate to the home page after signing out
           }}>
-            <button>Log Out</button>
+            <button>Atsijungti</button>
           </Link>
         </div>
       </header>
@@ -224,7 +224,7 @@ export default function ManagePage() {
       {error && <p className="error-message">{error}</p>}
 
       <aside className="sidebar">
-        <h2>Your Lists</h2>
+        <h2>Jūsų sąrašai</h2>
         <ul>
           {lists.map((list) => (
             <li key={list.id}>
@@ -238,13 +238,13 @@ export default function ManagePage() {
                 onClick={() => setEditingListId(list.id) || setListName(list.name)}
                 className="btn-update"
               >
-                Edit
+                Redaguoti
               </button>
               <button
                 onClick={() => handleDeleteList(list.id)}
                 className="btn-delete"
               >
-                Delete
+                Ištrinti
               </button>
             </li>
           ))}
@@ -253,7 +253,7 @@ export default function ManagePage() {
         <form onSubmit={editingListId ? handleUpdateList : handleCreateList}>
           <input
             type="text"
-            placeholder="List Name"
+            placeholder="Sąrašo pavadinimas"
             value={listName}
             onChange={(e) => setListName(e.target.value)}
             required
@@ -262,7 +262,7 @@ export default function ManagePage() {
             type="submit"
             className={editingListId ? "btn-update" : "btn-create"}
           >
-            {editingListId ? "Update List" : "Create List"}
+            {editingListId ? "Atnaujinti sąrašą" : "Sukurti sąrašą"}
           </button>
           {editingListId && (
             <button
@@ -322,25 +322,25 @@ export default function ManagePage() {
 `}</style>
 
       <main className="main">
-        <h2>Books in Selected List</h2>
+        <h2>Knygos pasirinktame sąraše</h2>
         {selectedListId && (
           <form onSubmit={editingBookId ? handleUpdateBook : handleAddBook}>
           <input
             type="text"
-            placeholder="Book Title"
+            placeholder="Knygos pavadinimas"
             value={bookTitle}
             onChange={(e) => setBookTitle(e.target.value)}
             required
           />
           <input
             type="text"
-            placeholder="Book Author (not required)"
+            placeholder="Knygos autorius (neprivaloma)"
             value={bookAuthor}
             onChange={(e) => setBookAuthor(e.target.value)}
           />
           <input
             type="text"
-            placeholder="Book ISBN (not required)"
+            placeholder="Knygos ISBN (neprivaloma)"
             value={bookIsbn}
             onChange={(e) => setBookIsbn(e.target.value)}
           />
@@ -348,7 +348,7 @@ export default function ManagePage() {
             type="submit"
             className={editingBookId ? "btn-update" : "btn-create"}
           >
-            {editingBookId ? "Update Book" : "Add Book"}
+            {editingBookId ? "Atnaujinti knygą" : "Pridėti knygą"}
           </button>
           {editingBookId && (
             <button
@@ -356,7 +356,7 @@ export default function ManagePage() {
               className="btn-cancel"
               onClick={cancelBookEditing}
             >
-              Cancel
+              Atšaukti
             </button>
           )}
         </form>        
@@ -366,7 +366,7 @@ export default function ManagePage() {
           {books.map((book) => (
             <li key={book.id}>
               <span>
-                {book.title} by {book.author} (ISBN: {book.isbn})
+                {book.title}, autorius: {book.author} (ISBN: {book.isbn})
               </span>
               <button
                 onClick={() =>
@@ -377,13 +377,13 @@ export default function ManagePage() {
                 }
                 className="btn-update"
               >
-                Edit
+                Redaguoti
               </button>
               <button
                 onClick={() => handleDeleteBook(book.id)}
                 className="btn-delete"
               >
-                Delete
+                Ištrinti
               </button>
             </li>
           ))}
