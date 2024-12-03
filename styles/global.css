@@ -1,4 +1,3 @@
-/* Global Styles */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -6,7 +5,7 @@ body {
   color: #333;
 }
 
-h1{
+h1 {
   color: #f8f9fa;
 }
 
@@ -64,8 +63,8 @@ form {
 }
 
 .button-group {
-  display: flex; /* Use flexbox for alignment */
-  gap: 8px; /* Add some space between the buttons */
+  display: flex;
+  gap: 8px;
 }
 
 .container-books {
@@ -78,7 +77,6 @@ form {
   height: 100vh;
 }
 
-/* Header */
 header {
   grid-area: header;
   display: flex;
@@ -123,15 +121,12 @@ header button:hover {
   color: white;
 }
 
-/* Main Content */
 .main-content {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-
-/* Sidebar */
 .sidebar {
   grid-area: sidebar;
   padding: 20px;
@@ -139,10 +134,8 @@ header button:hover {
   border-right: 1px solid #ddd;
 }
 
-/* Book Sections */
 .recommended-books,
-.sidebar
-.latest-books {
+.sidebar .latest-books {
   background-color: #f9f9f9;
   padding: 20px;
   border-radius: 8px;
@@ -168,7 +161,6 @@ header button:hover {
   background-color: #0056b3;
 }
 
-/* Main Content */
 .main {
   grid-area: main;
   padding: 20px;
@@ -176,7 +168,6 @@ header button:hover {
   overflow-y: auto;
 }
 
-/* Books Section */
 .books {
   grid-area: books;
   padding: 20px;
@@ -223,7 +214,6 @@ li span {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Search Page Styles */
 .search-container {
   max-width: 800px;
   margin: 0 auto;
@@ -342,7 +332,6 @@ li span {
   text-decoration: underline;
 }
 
-/* Latest Books Section */
 .latest-books {
   grid-area: latest-books;
   padding: 20px;
@@ -383,7 +372,6 @@ li span {
   border-radius: 4px;
 }
 
-/* Login Page Styles */
 .login-container {
   max-width: 400px;
   margin: 0 auto;
@@ -536,7 +524,6 @@ li span {
   text-decoration: underline;
 }
 
-/* Register Page Styles */
 .register-container {
   max-width: 400px;
   margin: 0 auto;

@@ -13,12 +13,12 @@ const secret = process.env.NEXTAUTH_SECRET;
 
 export default async function handler(req, res) {
   const token = await getToken({ req, secret });
-  
+
 
   if (!token) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  
+
 
   const userId = token.id; // Get user ID from the token
 
@@ -66,7 +66,7 @@ export default async function handler(req, res) {
     if (!bookId) {
       return res.status(400).json({ error: "Book ID is required" });
     }
-    
+
     const db = await openDB();
 
     await db.run("DELETE FROM books WHERE id = ? AND user_id = ?", [bookId, userId]);
@@ -75,18 +75,18 @@ export default async function handler(req, res) {
 
   if (req.method === "PUT") {
     const { bookId, title, author, isbn } = req.body;
-  
+
     if (!bookId || !title || !author || !isbn) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
     const db = await openDB();
-  
+
     await db.run(
       "UPDATE books SET title = ?, author = ?, isbn = ? WHERE id = ? AND user_id = ?",
       [title, author, isbn, bookId, userId]
     );
-  
+
     return res.status(200).json({ message: "Book updated successfully" });
   }
 

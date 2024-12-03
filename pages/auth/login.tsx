@@ -62,8 +62,8 @@ export default function Login() {
         </button>
         <a><br /></a>
         <button onClick={() => signIn("github")} className="github-login-button">
-        Log in with GitHub
-      </button>
+          Log in with GitHub
+        </button>
       </form>
 
       <div className="extra-links">

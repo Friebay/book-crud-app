@@ -38,40 +38,40 @@ export default function Home() {
       const seconds = now.getSeconds();
       return 60 - seconds; // Time until the next full minute
     };
-  
+
     // Fetch books initially and sync timers
     fetchBooks(); // Initial fetch
     const initialTimeLeft = calculateTimeLeft();
     setTimeLeft(initialTimeLeft); // Initialize countdown timer with calculated time
-  
+
     // Start countdown timer immediately
     const countdownInterval = setInterval(() => {
       setTimeLeft((prev) => (prev > 0 ? prev - 1 : 59));
     }, 1000);
-  
+
     // Schedule the first fetch at the next full minute
     const initialTimeout = setTimeout(() => {
       fetchBooks(); // Fetch books at the first full minute
       setTimeLeft(60); // Reset timer after fetching
-  
+
       // Start fetching books every 60 seconds
       const updateInterval = setInterval(() => {
         fetchBooks();
       }, 60000);
-  
+
       // Cleanup update interval when component unmounts
       return () => {
         clearInterval(updateInterval);
       };
     }, initialTimeLeft * 1000);
-  
+
     // Cleanup both the countdown and initial timeout when the component unmounts
     return () => {
       clearTimeout(initialTimeout);
       clearInterval(countdownInterval);
     };
   }, []);
-  
+
 
   // Handle search functionality
   const handleSearch = async (e: React.FormEvent) => {
@@ -112,7 +112,6 @@ export default function Home() {
         </nav>
       </header>
 
-      {/* Use the Sidebar Component */}
       <Sidebar />
 
       <main className="main">
@@ -190,10 +189,10 @@ export default function Home() {
           {latestBooks.map((book) => (
             <li key={book.id}>
               <p><a
-                      href={book.hyperlink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >{book.book_name}</a></p>
+                href={book.hyperlink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >{book.book_name}</a></p>
               <small>By {book.author_name}<br />At {book.found_time.substring(0, 16)}</small>
             </li>
           ))}

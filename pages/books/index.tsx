@@ -325,43 +325,41 @@ export default function ManagePage() {
         <h2>Books in Selected List</h2>
         {selectedListId && (
           <form onSubmit={editingBookId ? handleUpdateBook : handleAddBook}>
-            <input
-              type="text"
-              placeholder="Book Title"
-              value={bookTitle}
-              onChange={(e) => setBookTitle(e.target.value)}
-              required
-            />
-            <input
-              type="text"
-              placeholder="Book Author (not required)"
-              value={bookAuthor}
-              onChange={(e) => setBookAuthor(e.target.value)}
-              required
-            />
-            <input
-              type="text"
-              placeholder="Book ISBN (not required)"
-              value={bookIsbn}
-              onChange={(e) => setBookIsbn(e.target.value)}
-              required
-            />
+          <input
+            type="text"
+            placeholder="Book Title"
+            value={bookTitle}
+            onChange={(e) => setBookTitle(e.target.value)}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Book Author (not required)"
+            value={bookAuthor}
+            onChange={(e) => setBookAuthor(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Book ISBN (not required)"
+            value={bookIsbn}
+            onChange={(e) => setBookIsbn(e.target.value)}
+          />
+          <button
+            type="submit"
+            className={editingBookId ? "btn-update" : "btn-create"}
+          >
+            {editingBookId ? "Update Book" : "Add Book"}
+          </button>
+          {editingBookId && (
             <button
-              type="submit"
-              className={editingBookId ? "btn-update" : "btn-create"}
+              type="button"
+              className="btn-cancel"
+              onClick={cancelBookEditing}
             >
-              {editingBookId ? "Update Book" : "Add Book"}
+              Cancel
             </button>
-            {editingBookId && (
-              <button
-                type="button"
-                className="btn-cancel"
-                onClick={cancelBookEditing}
-              >
-                Cancel
-              </button>
-            )}
-          </form>
+          )}
+        </form>        
         )}
 
         <ul>
