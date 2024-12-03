@@ -20,7 +20,7 @@ export default async function handler(req, res) {
 
     // Fetch 3 latest books
     const latestBooks = await db.all(
-      "SELECT id, book_name, author_name FROM collected_books ORDER BY id DESC LIMIT 9"
+      "SELECT id, book_name, author_name, found_time FROM collected_books ORDER BY id DESC LIMIT 9"
     );
 
     return res.status(200).json({ randomBooks, latestBooks });

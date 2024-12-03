@@ -193,10 +193,18 @@ export default function ManagePage() {
     <div className="container-books">
       <header>
         <h1>Manage Your Lists and Books</h1>
-        <button onClick={() => signOut().then(() => router.push("/"))}>Log Out</button>
-        <Link href="/">
-          <button>Home</button>
-        </Link>
+        <div className="header-nav">
+          <Link href="/" onClick={async (e) => {
+            e.preventDefault(); // Prevent the default link behavior
+            await signOut(); // Call the sign-out function
+            router.push("/"); // Navigate to the home page after signing out
+          }}>
+            <button>Log Out</button>
+          </Link>
+          <Link href="/">
+            <button>Home</button>
+          </Link>
+        </div>
       </header>
 
       {error && <p className="error-message">{error}</p>}

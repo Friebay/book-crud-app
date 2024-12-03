@@ -59,6 +59,10 @@ form {
   height: 100vh;
 }
 
+.button-group {
+  display: flex; /* Use flexbox for alignment */
+  gap: 8px; /* Add some space between the buttons */
+}
 
 .container-books {
   display: grid;

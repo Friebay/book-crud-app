@@ -11,19 +11,46 @@ export default function Home() {
   const [searchResults, setSearchResults] = useState([]); // Search results
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const { data: session } = useSession(); // Get session data
+  const [timeLeft, setTimeLeft] = useState(60); // Timer starts at 60 seconds
 
-  // Fetch random and latest books
-  useEffect(() => {
-    async function fetchBooks() {
+  // Function to fetch random and latest books
+  async function fetchBooks() {
+    try {
       const res = await fetch("/api/books/random-latest");
       if (res.ok) {
         const data = await res.json();
         setRandomBooks(data.randomBooks);
         setLatestBooks(data.latestBooks);
+      } else {
+        console.error("Failed to fetch books:", res.statusText);
       }
+    } catch (error) {
+      console.error("Error fetching books:", error);
     }
-    fetchBooks();
+  }
+
+  // Fetch books and set up a timer
+  useEffect(() => {
+    fetchBooks(); // Initial fetch
+
+    // Timer for updating books every 60 seconds
+    const updateInterval = setInterval(() => {
+      fetchBooks();
+      setTimeLeft(60); // Reset timer after fetching
+    }, 60000);
+
+    // Countdown timer
+    const countdownInterval = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => {
+      clearInterval(updateInterval); // Cleanup update interval
+      clearInterval(countdownInterval); // Cleanup countdown interval
+    };
   }, []);
+
+  
 
   // Handle search functionality
   const handleSearch = async (e: React.FormEvent) => {
@@ -140,11 +167,12 @@ export default function Home() {
       </main>
       <aside className="latest-books">
         <h2>Latest Books</h2>
+        <p>Updating in {timeLeft} seconds...</p>
         <ul>
           {latestBooks.map((book) => (
             <li key={book.id}>
               <p>{book.book_name}</p>
-              <small>By {book.author_name}</small>
+              <small>By {book.author_name}<br />At {book.found_time}</small>
             </li>
           ))}
         </ul>
