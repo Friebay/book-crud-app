@@ -48,7 +48,6 @@ export default async function handler(req, res) {
 
     // Extract book names from the user's lists
     const bookNames = userLists.map((list) => list.title);
-    console.log("Book names extracted from user lists:", bookNames);
 
     const allLatestBooks = [];
 
@@ -58,16 +57,21 @@ export default async function handler(req, res) {
         `SELECT * 
          FROM collected_books 
          WHERE LOWER(book_name) = LOWER(?) 
+         AND found_time IS NOT NULL
+         ORDER BY found_time ASC
          LIMIT 10`,
         [bookName]
       );
 
-      console.log(`Books found for '${bookName}':`, latestBooks);
-
       allLatestBooks.push(...latestBooks);
     }
 
-    console.log("Combined latest books matching user lists:", allLatestBooks);
+    //console.log("Combined latest books matching user lists:", allLatestBooks);
+
+    // Sort allLatestBooks by found_time descending
+    allLatestBooks.sort((a, b) => new Date(b.found_time) - new Date(a.found_time));
+
+    // console.log("Sorted books by found_time (descending):", allLatestBooks);
 
     res.status(200).json({ books: allLatestBooks });
   } catch (error) {

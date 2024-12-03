@@ -23,8 +23,11 @@ function Sidebar() {
         {latestBooks.length > 0 ? (
           latestBooks.map((book) => (
             <li key={book.id}>
-              <p>{book.book_name}</p>
+              <a href={book.hyperlink}>
+                <p>{book.book_name}</p>
+              </a>
               <small>By {book.author_name}</small>
+              <small><br />Found {book.found_time}</small>
             </li>
           ))
         ) : (
