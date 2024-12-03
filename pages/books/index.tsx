@@ -206,9 +206,24 @@ export default function ManagePage() {
         <ul>
           {lists.map((list) => (
             <li key={list.id}>
-              <button onClick={() => setSelectedListId(list.id)}>{list.name}</button>
-              <button onClick={() => setEditingListId(list.id) || setListName(list.name)}>Edit</button>
-              <button onClick={() => handleDeleteList(list.id)}>Delete</button>
+              <button
+                onClick={() => setSelectedListId(list.id)}
+                className="btn-default"
+              >
+                {list.name}
+              </button>
+              <button
+                onClick={() => setEditingListId(list.id) || setListName(list.name)}
+                className="btn-update"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDeleteList(list.id)}
+                className="btn-delete"
+              >
+                Delete
+              </button>
             </li>
           ))}
         </ul>
@@ -221,10 +236,68 @@ export default function ManagePage() {
             onChange={(e) => setListName(e.target.value)}
             required
           />
-          <button type="submit">{editingListId ? "Update List" : "Create List"}</button>
-          {editingListId && <button type="button" onClick={cancelListEditing}>Cancel</button>}
+          <button
+            type="submit"
+            className={editingListId ? "btn-update" : "btn-create"}
+          >
+            {editingListId ? "Update List" : "Create List"}
+          </button>
+          {editingListId && (
+            <button
+              type="button"
+              className="btn-cancel"
+              onClick={cancelListEditing}
+            >
+              Cancel
+            </button>
+          )}
         </form>
       </aside>
+
+      <style jsx>{`
+  button {
+    padding: 8px 16px;
+    margin: 4px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .btn-create {
+    background-color: #4caf50; /* Green */
+    color: white;
+  }
+  .btn-create:hover {
+    background-color: #45a049;
+  }
+  .btn-update {
+    background-color: #2196f3; /* Blue */
+    color: white;
+  }
+  .btn-update:hover {
+    background-color: #0b7dda;
+  }
+  .btn-cancel {
+    background-color: #f44336; /* Red */
+    color: white;
+  }
+  .btn-cancel:hover {
+    background-color: #d32f2f;
+  }
+  .btn-delete {
+    background-color: #ff9800; /* Orange */
+    color: white;
+  }
+  .btn-delete:hover {
+    background-color: #fb8c00;
+  }
+  .btn-default {
+    background-color: #e0e0e0; /* Gray */
+    color: black;
+  }
+  .btn-default:hover {
+    background-color: #d5d5d5;
+  }
+`}</style>
 
       <main>
         <h2>Books in Selected List</h2>
@@ -251,19 +324,47 @@ export default function ManagePage() {
               onChange={(e) => setBookIsbn(e.target.value)}
               required
             />
-            <button type="submit">{editingBookId ? "Update Book" : "Add Book"}</button>
-            {editingBookId && <button type="button" onClick={cancelBookEditing}>Cancel</button>}
+            <button
+              type="submit"
+              className={editingBookId ? "btn-update" : "btn-create"}
+            >
+              {editingBookId ? "Update Book" : "Add Book"}
+            </button>
+            {editingBookId && (
+              <button
+                type="button"
+                className="btn-cancel"
+                onClick={cancelBookEditing}
+              >
+                Cancel
+              </button>
+            )}
           </form>
         )}
 
         <ul>
           {books.map((book) => (
             <li key={book.id}>
-              <span>{book.title} by {book.author} (ISBN: {book.isbn})</span>
-              <button onClick={() => setEditingBookId(book.id) || setBookTitle(book.title) || setBookAuthor(book.author) || setBookIsbn(book.isbn)}>
+              <span>
+                {book.title} by {book.author} (ISBN: {book.isbn})
+              </span>
+              <button
+                onClick={() =>
+                  setEditingBookId(book.id) ||
+                  setBookTitle(book.title) ||
+                  setBookAuthor(book.author) ||
+                  setBookIsbn(book.isbn)
+                }
+                className="btn-update"
+              >
                 Edit
               </button>
-              <button onClick={() => handleDeleteBook(book.id)}>Delete</button>
+              <button
+                onClick={() => handleDeleteBook(book.id)}
+                className="btn-delete"
+              >
+                Delete
+              </button>
             </li>
           ))}
         </ul>
