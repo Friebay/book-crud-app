@@ -29,27 +29,46 @@ export default function Home() {
     }
   }
 
-  // Fetch books and set up a timer
   useEffect(() => {
+    // Function to calculate the time until the next full minute
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const seconds = now.getSeconds();
+      return 60 - seconds; // Time until the next full minute
+    };
+  
+    // Fetch books initially and sync timers
     fetchBooks(); // Initial fetch
-
-    // Timer for updating books every 60 seconds
-    const updateInterval = setInterval(() => {
-      fetchBooks();
-      setTimeLeft(60); // Reset timer after fetching
-    }, 60000);
-
-    // Countdown timer
+    const initialTimeLeft = calculateTimeLeft();
+    setTimeLeft(initialTimeLeft); // Initialize countdown timer with calculated time
+  
+    // Start countdown timer immediately
     const countdownInterval = setInterval(() => {
-      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 59));
     }, 1000);
-
+  
+    // Schedule the first fetch at the next full minute
+    const initialTimeout = setTimeout(() => {
+      fetchBooks(); // Fetch books at the first full minute
+      setTimeLeft(60); // Reset timer after fetching
+  
+      // Start fetching books every 60 seconds
+      const updateInterval = setInterval(() => {
+        fetchBooks();
+      }, 60000);
+  
+      // Cleanup update interval when component unmounts
+      return () => {
+        clearInterval(updateInterval);
+      };
+    }, initialTimeLeft * 1000);
+  
+    // Cleanup both the countdown and initial timeout when the component unmounts
     return () => {
-      clearInterval(updateInterval); // Cleanup update interval
-      clearInterval(countdownInterval); // Cleanup countdown interval
+      clearTimeout(initialTimeout);
+      clearInterval(countdownInterval);
     };
   }, []);
-
   
 
   // Handle search functionality
@@ -143,7 +162,7 @@ export default function Home() {
         ) : (
           <>
             <section>
-              <h2>Recommended Books</h2>
+              <h2>Random Books</h2>
               <div className="book-cards">
                 {randomBooks.map((book) => (
                   <div className="book-card" key={book.id}>
@@ -171,8 +190,8 @@ export default function Home() {
         <ul>
           {latestBooks.map((book) => (
             <li key={book.id}>
-              <p>{book.book_name}</p>
-              <small>By {book.author_name}<br />At {book.found_time}</small>
+              <a href="book.hyperlink"><p>{book.book_name}</p></a>
+              <small>By {book.author_name}<br />At {book.found_time.substring(0, 16)}</small>
             </li>
           ))}
         </ul>
