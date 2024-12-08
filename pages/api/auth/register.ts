@@ -1,17 +1,9 @@
 import bcrypt from "bcryptjs";
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
-
-
-const openDB = async () =>
-  open({
-    filename: "./database.sqlite", // Path to your SQLite database
-    driver: sqlite3.Database,
-  });
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 
 function isPasswordComplex(password: string): boolean {
-  // Enforce password complexity rules
-  const minLength = 12; // Recommended minimum length
+  const minLength = 12;
   const hasUpperCase = /[A-Z]/.test(password);
   const hasLowerCase = /[a-z]/.test(password);
   const hasNumbers = /[0-9]/.test(password);
@@ -28,38 +20,50 @@ function isPasswordComplex(password: string): boolean {
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    const { email, password } = req.body;
+    try {
+      const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required." });
-    }
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required." });
+      }
 
-    if (!isPasswordComplex(password)) {
-      return res.status(400).json({
-        message: "Slaptažodis turi būti ne trumpesnis nei 12 simbolių, jame turi būti didžiosios ir mažosios raidės, skaičiai ir specialieji simboliai."
+      if (!isPasswordComplex(password)) {
+        return res.status(400).json({
+          message: "Slaptažodis turi būti ne trumpesnis nei 12 simbolių, jame turi būti didžiosios ir mažosios raidės, skaičiai ir specialieji simboliai."
+        });
+      }
+
+      // Check if user exists
+      const existingUser = await prisma.user.findUnique({
+        where: { email }
       });
+
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists." });
+      }
+
+      // Hash password and create user
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      const user = await prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          provider: 'credentials',
+          provider_account_id: null
+        }
+      });
+
+      res.status(201).json({ 
+        message: "User created successfully",
+        userId: user.id 
+      });
+
+    } catch (error) {
+      console.error('Registration error:', error);
+      res.status(500).json({ message: "Error creating user" });
     }
-
-    const db = await openDB();
-
-    // Check if the user already exists
-    const existingUser = await db.get("SELECT * FROM users WHERE email = ?", [email]);
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists." });
-    }
-
-    // Hash the password
-    const hashedPassword = bcrypt.hashSync(password, 10);
-
-    // Insert the new user
-    await db.run(
-      "INSERT INTO users (email, password) VALUES (?, ?)",
-      [email, hashedPassword]
-    );
-
-    res.status(201).json({ message: "User registered successfully." });
   } else {
-    res.setHeader("Allow", ["POST"]);
+    res.setHeader('Allow', ['POST']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }

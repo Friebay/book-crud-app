@@ -1,17 +1,7 @@
-import { getServerSession } from "next-auth/next";
-import authOptions from "../auth/[...nextauth]";
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
+import { PrismaClient } from '@prisma/client';
 import { getToken } from "next-auth/jwt";
 
-// Helper function to open the database
-async function openDatabase() {
-  return open({
-    filename: "./database.sqlite",
-    driver: sqlite3.Database,
-  });
-}
-
+const prisma = new PrismaClient();
 const secret = process.env.NEXTAUTH_SECRET;
 
 export default async function handler(req, res) {
@@ -27,58 +17,56 @@ export default async function handler(req, res) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  const userId = token.id; // Retrieve user ID from token payload
+  const userId = parseInt(token.id as string);
   console.log("User ID from token:", userId);
-
-  const db = await openDatabase();
 
   try {
     console.log("Fetching user book lists...");
-    const userLists = await db.all(
-      `SELECT title FROM books WHERE user_id = ?`,
-      [userId]
-    );
+    const userBooks = await prisma.book.findMany({
+      where: {
+        userId: userId
+      },
+      select: {
+        title: true
+      }
+    });
 
-    console.log("User book lists fetched:", userLists);
+    console.log("User book lists fetched:", userBooks);
 
-    if (userLists.length === 0) {
+    if (userBooks.length === 0) {
       console.log("No books found in the user's lists.");
       return res.status(200).json({ books: [] });
     }
 
     // Extract book names from the user's lists
-    const bookNames = userLists.map((list) => list.title);
+    const bookNames = userBooks.map(book => book.title);
 
-    const allLatestBooks = [];
+    // Fetch latest books using Prisma
+    const latestBooks = await prisma.collectedBook.findMany({
+      where: {
+        book_name: {
+          in: bookNames.map(name => name.toLowerCase())
+        },
+        NOT: {
+          found_time: null
+        }
+      },
+      orderBy: {
+        found_time: 'desc'
+      },
+      take: 10 * bookNames.length // Fetch 10 books per user book
+    });
 
-    for (const bookName of bookNames) {
-      console.log(`Searching for book: ${bookName}`);
-      const latestBooks = await db.all(
-        `SELECT * 
-         FROM collected_books 
-         WHERE LOWER(book_name) = LOWER(?) 
-         AND found_time IS NOT NULL
-         ORDER BY found_time ASC
-         LIMIT 10`,
-        [bookName]
-      );
+    // Sort by found_time descending
+    const sortedBooks = latestBooks.sort((a, b) => 
+      new Date(b.found_time).getTime() - new Date(a.found_time).getTime()
+    );
 
-      allLatestBooks.push(...latestBooks);
-    }
-
-    //console.log("Combined latest books matching user lists:", allLatestBooks);
-
-    // Sort allLatestBooks by found_time descending
-    allLatestBooks.sort((a, b) => new Date(b.found_time) - new Date(a.found_time));
-
-    // console.log("Sorted books by found_time (descending):", allLatestBooks);
-
-    res.status(200).json({ books: allLatestBooks });
+    res.status(200).json({ books: sortedBooks });
   } catch (error) {
     console.error("Error fetching user lists:", error);
     res.status(500).json({ message: "Internal server error" });
   } finally {
-    console.log("Closing database connection...");
-    await db.close();
+    await prisma.$disconnect();
   }
 }

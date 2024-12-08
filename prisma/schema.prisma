@@ -1,0 +1,47 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                  Int     @id @default(autoincrement())
+  email              String  @unique
+  password           String?
+  provider           String?
+  provider_account_id String?
+  lists              List[]
+  books              Book[]
+}
+
+model List {
+  id     Int     @id @default(autoincrement())
+  userId Int     @map("user_id")
+  name   String
+  books  Book[]
+  user   User    @relation(fields: [userId], references: [id])
+}
+
+model Book {
+  id      Int    @id @default(autoincrement())
+  listId  Int    @map("list_id")
+  userId  Int    @map("user_id")
+  title   String
+  author  String
+  isbn    String
+  list    List   @relation(fields: [listId], references: [id])
+  user    User   @relation(fields: [userId], references: [id])
+}
+
+model CollectedBook {
+  id          Int      @id @default(autoincrement())
+  book_name   String
+  author_name String
+  hyperlink   String
+  price       String
+  seller      String
+  found_time  DateTime @default(now())
+}

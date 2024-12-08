@@ -1,29 +1,41 @@
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
+import { PrismaClient } from '@prisma/client'
 
-// Open the SQLite database
-const openDB = async () => {
-  return open({
-    filename: "./database.sqlite",
-    driver: sqlite3.Database,
-  });
-};
+const prisma = new PrismaClient()
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
-    const db = await openDB();
+    try {
+      // Fetch 24 random books using PostgreSQL's RANDOM()
+      const randomBooks = await prisma.$queryRaw`
+        SELECT id, book_name, author_name, hyperlink, price 
+        FROM "CollectedBook" 
+        ORDER BY RANDOM() 
+        LIMIT 24
+      `;
 
-    // Fetch 12 random books
-    const randomBooks = await db.all(
-      "SELECT id, book_name, author_name, hyperlink, price FROM collected_books ORDER BY RANDOM() LIMIT 24"
-    );
+      // Fetch 10 latest books
+      const latestBooks = await prisma.collectedBook.findMany({
+        select: {
+          id: true,
+          book_name: true,
+          author_name: true,
+          found_time: true,
+          hyperlink: true
+        },
+        orderBy: {
+          id: 'desc'
+        },
+        take: 10
+      });
 
-    // Fetch 3 latest books
-    const latestBooks = await db.all(
-      "SELECT id, book_name, author_name, found_time, hyperlink FROM collected_books ORDER BY id DESC LIMIT 10"
-    );
+      return res.status(200).json({ randomBooks, latestBooks });
 
-    return res.status(200).json({ randomBooks, latestBooks });
+    } catch (error) {
+      console.error("Database error:", error);
+      return res.status(500).json({ message: "Failed to fetch books" });
+    } finally {
+      await prisma.$disconnect();
+    }
   }
 
   res.setHeader("Allow", ["GET"]);

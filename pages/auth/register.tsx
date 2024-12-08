@@ -136,7 +136,7 @@ export default function Register() {
           </div>
         </div>
         <button type="submit" className="register-button" disabled={isLoading}>
-          {isLoading ? "Creating Account..." : "Register"}
+          {isLoading ? "Registruojama..." : "Registruotis"}
         </button>
         <a><br /></a>
         <button

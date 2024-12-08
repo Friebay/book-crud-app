@@ -1,13 +1,7 @@
 import { getToken } from "next-auth/jwt";
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
+import { PrismaClient } from '@prisma/client';
 
-const openDB = async () =>
-  open({
-    filename: "./database.sqlite",
-    driver: sqlite3.Database,
-  });
-
+const prisma = new PrismaClient();
 const secret = process.env.NEXTAUTH_SECRET;
 
 export default async function handler(req, res) {
@@ -17,63 +11,91 @@ export default async function handler(req, res) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
+  const userId = parseInt(token.id as string);
 
-  const userId = token.id; // Retrieve user ID from token payload
+  try {
+    if (req.method === "POST") {
+      const { name } = req.body;
 
-  if (req.method === "POST") {
-    const { name } = req.body;
+      if (!name) {
+        return res.status(400).json({ message: "List name is required" });
+      }
 
-    if (!name) {
-      return res.status(400).json({ message: "List name is required" });
+      const list = await prisma.list.create({
+        data: {
+          userId,
+          name
+        }
+      });
+
+      return res.status(201).json(list);
     }
 
-    const db = await openDB();
-    const result = await db.run("INSERT INTO lists (user_id, name) VALUES (?, ?)", [
-      userId,
-      name,
-    ]);
-
-    return res.status(201).json({ id: result.lastID, name });
-  }
-
-  if (req.method === "GET") {
-    const db = await openDB();
-    const lists = await db.all("SELECT * FROM lists WHERE user_id = ?", [userId]);
-    return res.status(200).json(lists);
-  }
-
-  if (req.method === "DELETE") {
-    const { listId } = req.query;
-
-    if (!listId) {
-      return res.status(400).json({ error: "List ID is required" });
+    if (req.method === "GET") {
+      const lists = await prisma.list.findMany({
+        where: {
+          userId
+        },
+        include: {
+          books: true
+        }
+      });
+      return res.status(200).json(lists);
     }
 
-    const db = await openDB();
+    if (req.method === "DELETE") {
+      const { listId } = req.query;
 
-    // Delete the list and its associated books
-    await db.run("DELETE FROM books WHERE list_id = ? AND user_id = ?", [listId, userId]);
-    await db.run("DELETE FROM lists WHERE id = ? AND user_id = ?", [listId, userId]);
-    return res.status(200).json({ message: "List and associated books deleted successfully" });
-  }
+      if (!listId) {
+        return res.status(400).json({ error: "List ID is required" });
+      }
 
-  if (req.method === "PUT") {
-    const { listId, name } = req.body;
+      // Use transaction to delete list and associated books
+      await prisma.$transaction([
+        prisma.book.deleteMany({
+          where: {
+            listId: parseInt(listId as string),
+            userId
+          }
+        }),
+        prisma.list.delete({
+          where: {
+            id: parseInt(listId as string),
+            userId
+          }
+        })
+      ]);
 
-    if (!listId || !name) {
-      return res.status(400).json({ error: "List ID and name are required" });
+      return res.status(200).json({ message: "List and associated books deleted successfully" });
     }
 
-    const db = await openDB();
+    if (req.method === "PUT") {
+      const { listId, name } = req.body;
 
-    await db.run(
-      "UPDATE lists SET name = ? WHERE id = ? AND user_id = ?",
-      [name, listId, userId]
-    );
+      if (!listId || !name) {
+        return res.status(400).json({ error: "List ID and name are required" });
+      }
 
-    return res.status(200).json({ message: "List updated successfully" });
+      const list = await prisma.list.update({
+        where: {
+          id: parseInt(listId),
+          userId
+        },
+        data: {
+          name
+        }
+      });
+
+      return res.status(200).json(list);
+    }
+
+    res.setHeader("Allow", ["GET", "POST", "DELETE", "PUT"]);
+    return res.status(405).end(`Method ${req.method} Not Allowed`);
+
+  } catch (error) {
+    console.error("Database error:", error);
+    return res.status(500).json({ message: "Database operation failed", error: error.message });
+  } finally {
+    await prisma.$disconnect();
   }
-
-  res.setHeader("Allow", ["GET", "POST", "DELETE"]);
-  res.status(405).end(`Method ${req.method} Not Allowed`);
 }

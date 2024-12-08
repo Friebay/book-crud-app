@@ -1,13 +1,6 @@
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
+import { PrismaClient } from '@prisma/client';
 
-// Open the SQLite database
-const openDB = async () => {
-  return open({
-    filename: "./database.sqlite",
-    driver: sqlite3.Database,
-  });
-};
+const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
@@ -17,20 +10,43 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Query is required" });
     }
 
-    const db = await openDB();
+    try {
+      // Search using Prisma with PostgreSQL ILIKE
+      const books = await prisma.collectedBook.findMany({
+        
+        where: {
+          OR: [
+            {
+              book_name: {
+                contains: query as string,
+                mode: 'insensitive'
+              }
+            },
+            {
+              author_name: {
+                contains: query as string,
+                mode: 'insensitive'
+              }
+            }
+          ]
+        },
+        select: {
+          id: true,
+          book_name: true,
+          author_name: true,
+          hyperlink: true,
+          price: true
+        },
+        take: 50
+      });
 
-    // Search for books matching the query in author_name or book_name
-    const books = await db.all(
-      `
-      SELECT id, book_name, author_name, hyperlink, price
-      FROM collected_books
-      WHERE book_name LIKE ? OR author_name LIKE ?
-      LIMIT 50
-      `,
-      [`%${query}%`, `%${query}%`]
-    );
-
-    return res.status(200).json({ books });
+      return res.status(200).json({ books });
+    } catch (error) {
+      console.error("Search error:", error);
+      return res.status(500).json({ error: "Failed to search books" });
+    } finally {
+      await prisma.$disconnect();
+    }
   }
 
   res.setHeader("Allow", ["GET"]);
