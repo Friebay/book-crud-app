@@ -334,13 +334,13 @@ export default function ManagePage() {
           />
           <input
             type="text"
-            placeholder="Knygos autorius (neprivaloma)"
+            placeholder="Knygos autorius"
             value={bookAuthor}
             onChange={(e) => setBookAuthor(e.target.value)}
           />
           <input
             type="text"
-            placeholder="Knygos ISBN (neprivaloma)"
+            placeholder="Knygos ISBN"
             value={bookIsbn}
             onChange={(e) => setBookIsbn(e.target.value)}
           />
