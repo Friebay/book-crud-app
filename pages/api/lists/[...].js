@@ -68,14 +68,22 @@ export default async function handler(req, res) {
         return res.status(400).json({ message: "ID is required" });
       }
 
-      await prisma.list.delete({
-        where: {
-          id: parseInt(id),
-          userId
-        }
-      });
+      await prisma.$transaction([
+        prisma.book.deleteMany({
+          where: {
+            listId: parseInt(id),
+            userId
+          }
+        }),
+        prisma.list.delete({
+          where: {
+            id: parseInt(id),
+            userId
+          }
+        })
+      ]);
       
-      return res.status(200).json({ message: "List deleted" });
+      return res.status(200).json({ message: "List and associated books deleted" });
 
     } else {
       res.setHeader("Allow", ["POST", "GET", "PUT", "DELETE"]);

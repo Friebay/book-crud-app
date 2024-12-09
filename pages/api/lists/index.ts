@@ -16,7 +16,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log("Token retrieved:", token);
 
-    const userId = parseInt(token.id as string);
+    // Check the structure of the token and retrieve the user ID accordingly
+    let userId;
+    if (token.id) {
+      userId = parseInt(token.id as string);
+    } else if (token.sub) {
+      userId = parseInt(token.sub);
+    } else {
+      console.error("User ID not found in token");
+      return res.status(400).json({ message: "User ID not found in token" });
+    }
+
     if (isNaN(userId)) {
       console.error("Invalid user ID in token");
       return res.status(400).json({ message: "Invalid user ID" });
@@ -76,14 +86,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ message: "ID is required" });
       }
 
-      await prisma.list.delete({
-        where: {
-          id: parseInt(id),
-          userId
-        }
-      });
+      await prisma.$transaction([
+        prisma.book.deleteMany({
+          where: {
+            listId: parseInt(id),
+            userId
+          }
+        }),
+        prisma.list.delete({
+          where: {
+            id: parseInt(id),
+            userId
+          }
+        })
+      ]);
 
-      return res.status(200).json({ message: "List deleted" });
+      return res.status(200).json({ message: "List and associated books deleted" });
 
     } else {
       res.setHeader("Allow", ["POST", "GET", "PUT", "DELETE"]);
