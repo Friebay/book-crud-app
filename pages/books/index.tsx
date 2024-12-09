@@ -2,24 +2,14 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-
-// Type definitions for better type safety
-interface List {
-  id: string;
-  name: string;
-}
-
-interface Book {
-  id: string;
-  title: string;
-  author: string;
-  isbn: string;
-  list_id: string;
-}
+import type { List, Book } from "next-auth";
 
 export default function ManagePage() {
   const { data: session } = useSession();
   const router = useRouter();
+
+
+  const [loading, setLoading] = useState(true);
 
   const [lists, setLists] = useState([]);
   const [selectedListId, setSelectedListId] = useState("");
@@ -35,13 +25,30 @@ export default function ManagePage() {
 
   const [error, setError] = useState("");
 
-  // Fetch lists
+  // Updated fetch lists with error handling and type checking
   useEffect(() => {
     if (session?.user) {
+      setLoading(true);
       fetch("/api/lists")
-        .then((res) => res.json())
-        .then(setLists)
-        .catch(() => setError("Failed to fetch lists."));
+        .then((res) => {
+          if (!res.ok) throw new Error('Failed to fetch lists');
+          return res.json();
+        })
+        .then((data) => {
+          // Ensure data is an array before setting
+          if (Array.isArray(data)) {
+            setLists(data);
+          } else {
+            console.error('Expected array but got:', data);
+            setLists([]);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          setError("Failed to fetch lists.");
+          setLists([]);
+        })
+        .finally(() => setLoading(false));
     }
   }, [session]);
 
@@ -59,19 +66,27 @@ export default function ManagePage() {
   const handleCreateList = async (e) => {
     e.preventDefault();
     try {
+      console.log("Creating list with name:", listName);
       const res = await fetch("/api/lists", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        credentials: "include",
         body: JSON.stringify({ name: listName }),
       });
-      if (res.ok) {
-        const newList = await res.json();
-        setLists((prev) => [...prev, newList]);
-        setListName("");
-      } else {
-        throw new Error();
+  
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error(`HTTP error! status: ${res.status}, message: ${errorText}`);
+        throw new Error(`HTTP error! status: ${res.status}`);
       }
-    } catch {
+      const newList = await res.json();
+      setLists((prev) => [...prev, newList]);
+      setListName("");
+    } catch (error) {
+      console.error("Failed to create list:", error);
       setError("Failed to create list.");
     }
   };
@@ -83,7 +98,7 @@ export default function ManagePage() {
       const res = await fetch("/api/lists", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ listId: editingListId, name: listName }),
+        body: JSON.stringify({ id: editingListId, name: listName }),
       });
       if (res.ok) {
         setLists((prev) =>
@@ -91,30 +106,41 @@ export default function ManagePage() {
         );
         cancelListEditing();
       } else {
-        throw new Error();
+        const errorText = await res.text();
+        console.error(`HTTP error! status: ${res.status}, message: ${errorText}`);
+        throw new Error(`HTTP error! status: ${res.status}`);
       }
-    } catch {
+    } catch (error) {
+      console.error("Failed to update list:", error);
       setError("Failed to update list.");
     }
   };
+  
 
   // Handle list deletion
-  const handleDeleteList = async (listId) => {
-    try {
-      const res = await fetch(`/api/lists?listId=${listId}`, { method: "DELETE" });
-      if (res.ok) {
-        setLists((prev) => prev.filter((list) => list.id !== listId));
-        if (selectedListId === listId) {
-          setSelectedListId("");
-          setBooks([]);
-        }
-      } else {
-        throw new Error();
+const handleDeleteList = async (listId) => {
+  try {
+    const res = await fetch("/api/lists", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: listId }),
+    });
+    if (res.ok) {
+      setLists((prev) => prev.filter((list) => list.id !== listId));
+      if (selectedListId === listId) {
+        setSelectedListId("");
+        setBooks([]);
       }
-    } catch {
-      setError("Failed to delete list.");
+    } else {
+      const errorText = await res.text();
+      console.error(`HTTP error! status: ${res.status}, message: ${errorText}`);
+      throw new Error(`HTTP error! status: ${res.status}`);
     }
-  };
+  } catch (error) {
+    console.error("Failed to delete list:", error);
+    setError("Failed to delete list.");
+  }
+};
 
   // Handle book creation
   const handleAddBook = async (e) => {
@@ -225,11 +251,14 @@ export default function ManagePage() {
 
       <aside className="sidebar">
         <h2>Jūsų sąrašai</h2>
-        <ul>
-          {lists.map((list) => (
-            <li key={list.id}>
+        {loading ? (
+          <p>Loading...</p>
+        ) : lists && Array.isArray(lists) ? (
+          <ul>
+            {lists.map((list: List) => (
+              <li key={list.id}>
               <button
-                onClick={() => setSelectedListId(list.id)}
+                onClick={() => setSelectedListId(list.id.toString())}
                 className="btn-default"
               >
                 {list.name}
@@ -249,6 +278,9 @@ export default function ManagePage() {
             </li>
           ))}
         </ul>
+        ) : (
+          <p>No lists found</p>
+        )}
 
         <form onSubmit={editingListId ? handleUpdateList : handleCreateList}>
           <input

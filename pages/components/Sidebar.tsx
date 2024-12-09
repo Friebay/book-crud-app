@@ -10,8 +10,10 @@ function Sidebar() {
       const res = await fetch("/api/user-lists/latest-books");
       if (res.ok) {
         const data = await res.json();
+        console.log("Fetched latest books:", data);
         setLatestBooks(data.books);
       } else {
+        console.error("Failed to fetch latest books:", res.status, res.statusText);
         setLatestBooks([]);
       }
     } catch (error) {

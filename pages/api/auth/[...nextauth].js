@@ -51,16 +51,26 @@ export default NextAuth({
     }),
   ],
   callbacks: {
+    async session({ session, token }) {
+      if (session?.user) {
+        session.user.id = token.sub;
+      }
+      return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
     async signIn({ user, account }) {
       if (account.provider === "github") {
         try {
-          // Check if user exists
           const dbUser = await prisma.user.findUnique({
             where: { email: user.email }
           });
 
           if (!dbUser) {
-            // Create new user if doesn't exist
             await prisma.user.create({
               data: {
                 email: user.email,

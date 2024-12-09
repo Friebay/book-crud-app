@@ -13,7 +13,6 @@ export default async function handler(req, res) {
     try {
       // Search using Prisma with PostgreSQL ILIKE
       const books = await prisma.collectedBook.findMany({
-        
         where: {
           OR: [
             {

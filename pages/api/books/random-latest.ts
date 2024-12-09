@@ -8,7 +8,7 @@ export default async function handler(req, res) {
       // Fetch 24 random books using PostgreSQL's RANDOM()
       const randomBooks = await prisma.$queryRaw`
         SELECT id, book_name, author_name, hyperlink, price 
-        FROM "CollectedBook" 
+        FROM "collectedBook" 
         ORDER BY RANDOM() 
         LIMIT 24
       `;

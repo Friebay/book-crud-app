@@ -36,12 +36,12 @@ model Book {
   user    User   @relation(fields: [userId], references: [id])
 }
 
-model CollectedBook {
-  id          Int      @id @default(autoincrement())
-  book_name   String
-  author_name String
-  hyperlink   String
-  price       String
-  seller      String
-  found_time  DateTime @default(now())
+model collectedBook {
+  id          Int       @id @default(autoincrement())
+  book_name   String?
+  author_name String?
+  hyperlink   String?
+  price       String?
+  seller      String?
+  found_time  String?
 }
