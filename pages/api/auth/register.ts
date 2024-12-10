@@ -24,7 +24,7 @@ export default async function handler(req, res) {
       const { email, password } = req.body;
 
       if (!email || !password) {
-        return res.status(400).json({ message: "Email and password are required." });
+        return res.status(400).json({ message: "Būtinas el. pašto adresas ir slaptažodis." });
       }
 
       if (!isPasswordComplex(password)) {
@@ -39,7 +39,7 @@ export default async function handler(req, res) {
       });
 
       if (existingUser) {
-        return res.status(400).json({ message: "User already exists." });
+        return res.status(400).json({ message: "Toks el. pašto adresas jau užregistruotas." });
       }
 
       // Hash password and create user
@@ -53,14 +53,14 @@ export default async function handler(req, res) {
         }
       });
 
-      res.status(201).json({ 
-        message: "User created successfully",
-        userId: user.id 
+      res.status(201).json({
+        message: "Paskyra sėkmingai sukurta.",
+        userId: user.id
       });
 
     } catch (error) {
-      console.error('Registration error:', error);
-      res.status(500).json({ message: "Error creating user" });
+      console.error('Regsitracijos klaida: ', error);
+      res.status(500).json({ message: "Klaida kuriant paskyą" });
     }
   } else {
     res.setHeader('Allow', ['POST']);

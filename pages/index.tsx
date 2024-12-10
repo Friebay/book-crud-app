@@ -12,7 +12,6 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const { data: session } = useSession(); // Get session data
   const [timeLeft, setTimeLeft] = useState(60); // Timer starts at 60 seconds
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
 
 
   // Function to fetch random and latest books

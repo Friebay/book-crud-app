@@ -69,14 +69,14 @@ export default function ManagePage() {
       console.log("Creating list with name:", listName);
       const res = await fetch("/api/lists", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
         credentials: "include",
         body: JSON.stringify({ name: listName }),
       });
-  
+
       if (!res.ok) {
         const errorText = await res.text();
         console.error(`HTTP error! status: ${res.status}, message: ${errorText}`);
@@ -115,32 +115,32 @@ export default function ManagePage() {
       setError("Failed to update list.");
     }
   };
-  
+
 
   // Handle list deletion
-const handleDeleteList = async (listId) => {
-  try {
-    const res = await fetch("/api/lists", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: listId }),
-    });
-    if (res.ok) {
-      setLists((prev) => prev.filter((list) => list.id !== listId));
-      if (selectedListId === listId) {
-        setSelectedListId("");
-        setBooks([]);
+  const handleDeleteList = async (listId) => {
+    try {
+      const res = await fetch("/api/lists", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: listId }),
+      });
+      if (res.ok) {
+        setLists((prev) => prev.filter((list) => list.id !== listId));
+        if (selectedListId === listId) {
+          setSelectedListId("");
+          setBooks([]);
+        }
+      } else {
+        const errorText = await res.text();
+        console.error(`HTTP error! status: ${res.status}, message: ${errorText}`);
+        throw new Error(`HTTP error! status: ${res.status}`);
       }
-    } else {
-      const errorText = await res.text();
-      console.error(`HTTP error! status: ${res.status}, message: ${errorText}`);
-      throw new Error(`HTTP error! status: ${res.status}`);
+    } catch (error) {
+      console.error("Failed to delete list:", error);
+      setError("Failed to delete list.");
     }
-  } catch (error) {
-    console.error("Failed to delete list:", error);
-    setError("Failed to delete list.");
-  }
-};
+  };
 
   // Handle book creation
   const handleAddBook = async (e) => {
@@ -257,27 +257,30 @@ const handleDeleteList = async (listId) => {
           <ul>
             {lists.map((list: List) => (
               <li key={list.id}>
-              <button
-                onClick={() => setSelectedListId(list.id.toString())}
-                className="btn-default"
-              >
-                {list.name}
-              </button>
-              <button
-                onClick={() => setEditingListId(list.id) || setListName(list.name)}
-                className="btn-update"
-              >
-                Redaguoti
-              </button>
-              <button
-                onClick={() => handleDeleteList(list.id)}
-                className="btn-delete"
-              >
-                Ištrinti
-              </button>
-            </li>
-          ))}
-        </ul>
+                <button
+                  onClick={() => setSelectedListId(list.id.toString())}
+                  className="btn-default"
+                >
+                  {list.name}
+                </button>
+                <button
+                  onClick={() => setEditingListId(list.id) || setListName(list.name)}
+                  className="btn-update"
+                >
+                  Redaguoti
+                </button>
+                <button
+                  onClick={async () => {
+                    await handleDeleteList(list.id);
+                    window.location.reload();
+                  }}
+                  className="btn-delete"
+                >
+                  Ištrinti
+                </button>
+              </li>
+            ))}
+          </ul>
         ) : (
           <p>No lists found</p>
         )}
@@ -357,41 +360,41 @@ const handleDeleteList = async (listId) => {
         <h2>Knygos pasirinktame sąraše</h2>
         {selectedListId && (
           <form onSubmit={editingBookId ? handleUpdateBook : handleAddBook}>
-          <input
-            type="text"
-            placeholder="Knygos pavadinimas"
-            value={bookTitle}
-            onChange={(e) => setBookTitle(e.target.value)}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Knygos autorius"
-            value={bookAuthor}
-            onChange={(e) => setBookAuthor(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Knygos ISBN"
-            value={bookIsbn}
-            onChange={(e) => setBookIsbn(e.target.value)}
-          />
-          <button
-            type="submit"
-            className={editingBookId ? "btn-update" : "btn-create"}
-          >
-            {editingBookId ? "Atnaujinti knygą" : "Pridėti knygą"}
-          </button>
-          {editingBookId && (
+            <input
+              type="text"
+              placeholder="Knygos pavadinimas"
+              value={bookTitle}
+              onChange={(e) => setBookTitle(e.target.value)}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Knygos autorius"
+              value={bookAuthor}
+              onChange={(e) => setBookAuthor(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Knygos ISBN"
+              value={bookIsbn}
+              onChange={(e) => setBookIsbn(e.target.value)}
+            />
             <button
-              type="button"
-              className="btn-cancel"
-              onClick={cancelBookEditing}
+              type="submit"
+              className={editingBookId ? "btn-update" : "btn-create"}
             >
-              Atšaukti
+              {editingBookId ? "Atnaujinti knygą" : "Pridėti knygą"}
             </button>
-          )}
-        </form>        
+            {editingBookId && (
+              <button
+                type="button"
+                className="btn-cancel"
+                onClick={cancelBookEditing}
+              >
+                Atšaukti
+              </button>
+            )}
+          </form>
         )}
 
         <ul>
